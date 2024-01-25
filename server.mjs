@@ -34,6 +34,17 @@ function startServer() {
       }
 
       const contentType = response.headers.get('content-type');
+      const xFrameOptions = response.headers.get('x-frame-options');
+      // const iframeAllowed = !xFrameOptions || xFrameOptions.toLowerCase() === 'allow-from';
+      // Consider 'SAMEORIGIN' as iframe allowed if your domain is same as the target's domain
+      // Otherwise, allow if 'X-Frame-Options' header is not present
+      const iframeAllowed = !xFrameOptions || xFrameOptions.toLowerCase() === 'sameorigin';
+
+      // Send custom header based on the X-Frame-Options value
+      // res.setHeader('X-IFrame-Allowed', iframeAllowed);
+      res.setHeader('X-Content-Embeddable', iframeAllowed ? 'true' : 'false');
+
+
 
       if (contentType && contentType.includes('text/html')) {
         const body = await response.text();
